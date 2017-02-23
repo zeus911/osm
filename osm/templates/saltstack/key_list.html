@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% block title %}minion端认证管理及连通性测试{% endblock %}
+{% block content %}
+
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h3 class="page-header">minions管理及命令执行</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+           <!--  <ul class="nav nav-tabs">
+                <li class="active"><a href="/saltstack/key_list/">minion认证管理</a>
+                </li>
+                <li><a href="/saltstack/match_arg/">生成minion匹配值</a>
+                </li>
+                <li><a href="/saltstack/minion_service_start_html/">管理minion服务</a>
+                </li>
+                <li><a href="/saltstack/minion_install_html/">自动化部署minion</a>
+                </li>
+                <li><a href="/saltstack/cmd_exec_html/">执行系统命令</a>
+                </li>
+                <li><a href="/saltstack/state_exec_html/">执行States编排</a>
+                </li>
+            </ul> -->
+            <div class="tab-content">
+                <div class="tab-pane fade in active">
+ 					<div class="row">
+ 					<br>
+            			<div class="col-lg-3">
+                			<label style="color: black;font-size: 22px">认证管理：</label>
+         	    			<ul style="padding:0;">
+         	        			<form action="/saltstack/key_delete/" method="get" role="form" id="minion">
+                        			<div class="form-group">
+                            			<label style="color: green">Accepted：</label>
+                            			<select id="accepted" class="form-control" multiple="" name="match" style="background-color: black;color: green">
+                            			{% for i in minions.minions %}
+                                			<option>{{ i }}</option>
+                            			{% empty %}
+                                			<option>null</option>
+                            			{% endfor %}
+                            			</select>
+                        			</div>
+                        			<!-- <button class="btn btn-danger type="submit">删除</button> -->
+                                    <input class="btn btn-danger" style="margin-bottom:10px" type="button" value="删除" onclick="minion_delete();">
+                    			</form>
+                    			<form id="f_accept_reject" action="/saltstack/key_accept_reject/" method="get" role="form">
+                        			<div class="form-group">
+                            			<label style="color: red">Unaccepted：</label>
+                            			<select id="s_accept_reject" class="form-control" multiple="" name="match" style="background-color: black;color: red">
+                            			{% for i in minions.minions_pre %}
+                                			<option>{{ i }}</option>
+                            			{% empty %}
+                                			<option>null</option>
+                            			{% endfor %}
+                            			</select>
+                        			</div>
+                                    <input class="btn btn-success" style="margin-bottom:10px" type="button" value="授受" onclick="accept_reject();">
+                                    <input class="btn btn-warning" style="margin-bottom:10px" type="button" value="拒绝" onclick="accept_reject();">
+                        			<!-- <button name="action" value="accept" class="btn btn-success" type="submit">接受</button>
+                                    <button name="action" value="reject" class="btn btn-warning" type="submit">拒绝</button> -->
+                    			</form>
+                                <form>
+                                    <div class="form-group">
+                                        <label style="color: red">Rejected：</label>
+                                        <select class="form-control" multiple="" name="match" style="background-color: black;color: red">
+                                        {% for i in minions.minions_rejected %}
+                                            <option>{{ i }}</option>
+                                        {% empty %}
+                                            <option>null</option>
+                                        {% endfor %}
+                                        </select>
+                                    </div>               
+                                </form>
+                                <form>
+                                    <div class="form-group">
+                                        <label style="color: red">Denied：</label>
+                                        <select class="form-control" multiple="" name="match" style="background-color: black;color: red">
+                                        {% for i in minions.minions_denied %}
+                                            <option>{{ i }}</option>
+                                        {% empty %}
+                                            <option>null</option>
+                                        {% endfor %}
+                                        </select>
+                                    </div>               
+                                </form>
+                			</ul>
+            			</div>
+            			<!-- <div class="col-lg-1"> 
+            			</div> -->
+            			<div class="col-lg-9">
+                			<label style="color: black;font-size: 22px">执行命令：</label>
+                			<ul style="padding:0;">
+                			<form class="form-horizontal" action="/saltstack/connect_test_exec/" method="get" role="form">
+                			<div class="form-group" style="padding-left:15px;">
+                    			<!-- <label style="color: green">输入IP信息：</label> -->
+                                <div class="col-lg-2" style="padding:0 5px 0 0;">
+                                    <label for="options" class="control-label" style="padding:0;text-align:center;">选项:</label>
+                                    <!-- <input type="text" class="form-control" id="options" name="opt" placeholder="选项"> -->
+                                    <select class="form-control" name="options">
+                                        <option>glob</option>
+                                        <option>pcre</option>
+                                        <option>list</option>
+                                        <option>grain</option>
+                                        <option>pillar</option>
+                                        <option>nodegroup</option>
+                                        <option>range</option>
+                                        <option>compound</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-lg-3" style="padding:0 5px 0 0;">
+                                    <label for="target" class="control-label" style="padding:0;text-align:center;">Target:</label>
+                                    <input type="text" class="form-control" id="target" name="tgt" placeholder="target">
+                                </div>
+                                
+                                <div class="col-lg-3" style="padding:0 5px 0 0;">
+                                    <label for="command" class="control-label" style="padding:0;text-align:center;">命令:</label>
+                                    <input type="text" class="form-control" id="command" name="cmd" placeholder="命令">
+                                </div>
+                                
+                                <div class="col-lg-3" style="padding:0 5px 0 0;">
+                                    <label for="arguments" class="control-label" style="padding:0;text-align:center;">参数:</label>
+                                    <input type="text" class="form-control" id="arguments" name="arg" placeholder="参数">
+                                </div>
+                                <div style="margin-top:19px">
+                                    <input class="btn btn-info" type="submit" value="执行">
+                                </div>
+                    			<!-- <input class="form-control" name="connect_test_ip" placeholder="多个IP以逗号分隔">
+                    			<input class="btn btn-primary btn-xs" type="submit" value="测试"> -->
+                			</div>
+                                <!--<button class="btn btn-primary btn-xs" type="submit">测试</button>-->
+                			</form>
+                			<div class="form-group">
+                    			<label style="color: green" id="execResult">执行结果：</label>
+                    			<textarea id="textareaBox" style="background-color: black;color: green" class="form-control">{% for key, value in connect_test_result.items %}{{ key }}: 
+        {{ value }}
+{% endfor %}{% for key_err, value_err in err_ip.items %}{{ key_err }}:        {{ value_err }}
+{% endfor %}
+                    			</textarea>
+                			</div>
+                			</ul>
+            			</div>
+            		</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    
+    // setTimeout(function(){
+
+    // },1000)
+    window.onload = function(){
+        $('html,body').css('minWidth','1200px');
+       var height = $(window).height() - $('#execResult').offset().top - $('#execResult').height() - 20;
+       $('#textareaBox').css('height',height+'px');
+
+       $(window).resize(function(){
+            var height = $(window).height() - $('#execResult').offset().top - $('#execResult').height() - 20;
+            $('#textareaBox').css('height',height+'px');
+       })
+    }
+</script>
+{% endblock %}
