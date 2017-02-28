@@ -25,7 +25,7 @@ SECRET_KEY = 'c7r_6!et7b9uha&1pk1$kg_6s3qfn@lmhh4h=z%)fmc79#_hr$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['45.78.9.110','www.tolive.vip']
 
 
 # Application definition

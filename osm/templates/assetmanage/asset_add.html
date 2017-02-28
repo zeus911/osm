@@ -32,6 +32,7 @@
                     <div class="row">
                     <br>   
                         <form action="/assetmanage/asset_add/" method="post" role="form">
+				{% csrf_token %}
                                 <ul>
                                 <div class="form-group col-lg-4">
                                     <div style="color: green"><span style="color: red">*</span> 资产编号：<input class="form-control" name="asset_num" required="required"></div>
